@@ -1,0 +1,17 @@
+{
+  "name": "canvas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel index.html --port=1234 --open",
+    "build": "parcel build index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "dependencies": {
+    "parcel": "^2.6.2",
+    "typescript": "^4.7.4"
+  }
+}
