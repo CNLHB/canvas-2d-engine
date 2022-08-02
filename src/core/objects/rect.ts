@@ -1,17 +1,30 @@
+import { RectType } from '../enum';
+
 /**
  *
  */
 export default class Rect {
-  ctx;
+  ctx: CanvasRenderingContext2D;
   x: number;
   y: number;
   height: number;
   width: number;
-  constructor(x: number, y: number, height: number, width: number) {
+  type: RectType;
+  color?: string;
+  constructor(
+    x: number,
+    y: number,
+    height: number,
+    width: number,
+    type: RectType = 'fill',
+    color?: string
+  ) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+    this.type = type;
+    this.color = color;
   }
   setCtx(ctx) {
     this.ctx = ctx;
@@ -19,6 +32,13 @@ export default class Rect {
   update() {}
   draw() {
     const ctx = this.ctx;
-    ctx.fillRect(this.x, this.y, this.height, this.width);
+    if (this.color) {
+      ctx.fillStyle = this.color;
+    }
+    ctx[`${this.type}Rect`](this.x, this.y, this.height, this.width);
+  }
+  clear() {
+    const ctx = this.ctx;
+    ctx.clearRect(this.x, this.y, this.height, this.width);
   }
 }
