@@ -5,6 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "dev": "parcel index.html --port=1234 --open",
     "start": "parcel index.html --port=1234 --open",
     "build": "parcel build index.html"
   },

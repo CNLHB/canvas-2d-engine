@@ -1,7 +1,7 @@
 import { ICanvasEngine } from './core/interface/index';
 import { Rect, Line } from './core/objects/index';
-export { Rect, Line } from './core/objects/index';
-
+import { addEventListenerByDom } from './event';
+export { Rect, Line };
 /**
  *
  */
@@ -15,7 +15,9 @@ export default class CanvasEngine {
       console.error('CanvasEngine Error');
       return;
     }
+    addEventListenerByDom(this.canvas);
     this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+    this.ctx.setTransform(0.5, 0, 0, 0.5, 0, 0);
     this.nodes = [];
   }
   add(node: Rect) {
@@ -35,7 +37,18 @@ export default class CanvasEngine {
     line.draw();
     this.nodes.push(line);
   }
-  drawCircle() {}
+  drawCircle(x, y, radius) {
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    // this.ctx.fill();
+    this.ctx.stroke();
+  }
+  drawArc(x, y, radius, startAngle, endAngle, anticlockwise = true) {
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+    // this.ctx.fill();
+    this.ctx.stroke();
+  }
   clear() {
     this.nodes.forEach((node) => {
       node.clear();

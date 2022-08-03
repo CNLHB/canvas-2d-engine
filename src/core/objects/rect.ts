@@ -1,9 +1,9 @@
 import { RectType } from '../enum';
-
+import Base from './base';
 /**
  *
  */
-export default class Rect {
+export default class Rect extends Base {
   ctx: CanvasRenderingContext2D;
   x: number;
   y: number;
@@ -19,6 +19,7 @@ export default class Rect {
     type: RectType = 'fill',
     color?: string
   ) {
+    super();
     this.x = x;
     this.y = y;
     this.width = width;

@@ -1,7 +1,7 @@
 import Canvas2DEngine from './src/index';
 import { Rect } from './src/index';
 const container = document.getElementById('app') as HTMLDivElement;
-const canvas = document.createElement('canvas');
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 container.appendChild(canvas);
 const canvasIns = new Canvas2DEngine({
   el: canvas,
@@ -44,13 +44,14 @@ const linePoints = [
     y: 75,
   },
 ];
-nodeRect.forEach((rect) => {
-  canvasIns.drawRect(rect);
-});
-canvasIns.drawLine({
-  points: linePoints,
-  type: 'stroke',
-  close: true,
-});
+// nodeRect.forEach((rect) => {
+//   canvasIns.drawRect(rect);
+// });
+// canvasIns.drawLine({
+//   points: linePoints,
+//   type: 'stroke',
+//   close: true,
+// });
+canvasIns.drawCircle(75, 75, 50);
 // canvasIns.clear();
 console.log(canvasIns);

@@ -28,6 +28,7 @@ export default class Line {
     this.points.forEach((point, index) => {
       // 自定义画笔
       if (point.type) {
+        ctx[`${point.type}To`](point.x, point.y);
         return;
       }
       if (index === 0) {
@@ -39,6 +40,7 @@ export default class Line {
     if (this.close && this.points.length > 1) {
       ctx.lineTo(this.points[0].x, this.points[0].y);
     }
+    ctx.closePath();
     ctx[this.type]();
   }
   clear() {
