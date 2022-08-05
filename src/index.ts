@@ -1,6 +1,8 @@
 import { ICanvasEngine } from './core/interface/index';
-import { Rect, Line } from './core/objects/index';
+import Storage from './Storage';
+import { Rect, Line } from './graphic/shape/index';
 import { addEventListenerByDom } from './event';
+import Painter from './Painter';
 export { Rect, Line };
 /**
  *
@@ -8,6 +10,10 @@ export { Rect, Line };
 export default class CanvasEngine {
   private canvas: HTMLCanvasElement;
   private nodes: Array<any>;
+  storage: Storage;
+  painter: Painter;
+  _needsRefresh = false;
+  _needsRefreshHover = false;
   ctx: CanvasRenderingContext2D;
   constructor(options) {
     this.canvas = options.el;
@@ -18,10 +24,17 @@ export default class CanvasEngine {
     addEventListenerByDom(this.canvas);
     this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
     this.ctx.setTransform(0.5, 0, 0, 0.5, 0, 0);
+    this.storage = new Storage();
     this.nodes = [];
   }
-  add(node: Rect) {
-    this.nodes.push(node);
+  /**
+   * 添加元素
+   * @param  {module:zrender/Element} node
+   */
+  add(el: any) {
+    this.nodes.push(el);
+    this.storage.addRoot(el);
+    this._needsRefresh = true;
   }
   drawRect(params) {
     const { x, y, width, height, type, color } = params;
