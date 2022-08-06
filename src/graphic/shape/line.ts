@@ -1,4 +1,4 @@
-import { LineType } from '../enum';
+import { LineType } from '../../core/enum/index';
 
 interface IPoint {
   x: number;

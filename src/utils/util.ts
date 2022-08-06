@@ -318,7 +318,7 @@ export function each(obj, cb, context?) {
  * @param {*} [context]
  * @return {Array}
  */
-export function map(obj, cb, context) {
+export function map(obj, cb, context?) {
   if (!(obj && cb)) {
     return;
   }

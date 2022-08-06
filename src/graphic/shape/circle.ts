@@ -11,7 +11,11 @@ export default class Circle extends Path {
     cy: 0,
     r: 0,
   };
-
+  constructor(opts) {
+    super(opts);
+    // console.log('this', this);
+    this.shape = opts.shape || {};
+  }
   buildPath(ctx, shape, inBundle) {
     // Better stroking in ShapeBundle
     // Always do it may have performance issue ( fill may be 2x more cost)
@@ -26,5 +30,9 @@ export default class Circle extends Path {
     // Better stroking in ShapeBundle
     // ctx.moveTo(shape.cx + shape.r, shape.cy);
     ctx.arc(shape.cx, shape.cy, shape.r, 0, Math.PI * 2, true);
+    if (ctx._ctx) {
+      ctx._ctx.fillStyle = 'pink';
+      ctx._ctx.fill();
+    }
   }
 }

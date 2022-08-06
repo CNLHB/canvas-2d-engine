@@ -1,13 +1,25 @@
 import guid from './core/guid';
 import Displayable from './graphic/Displayable';
 import * as zrUtil from './utils/util';
-import Event from './event/event';
+import Transformable from './mixin/Transformable';
 
+function applyMixins(derivedCtor: any, constructors: any[]) {
+  constructors.forEach((baseCtor) => {
+    Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
+      Object.defineProperty(
+        derivedCtor.prototype,
+        name,
+        Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
+          Object.create(null)
+      );
+    });
+  });
+}
 /**
  * @alias module:zRender/Element
  * @constructor
  */
-class Element extends Event {
+class Element extends Transformable {
   id;
   /**
    * 元素类型
@@ -228,5 +240,6 @@ class Element extends Event {
   //     }
   //   }
 }
+// applyMixins(Element, [Transformable, Event]);
 
 export default Element;

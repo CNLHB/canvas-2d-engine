@@ -1,11 +1,7 @@
 import Canvas2DEngine from './src/index';
-import { Rect } from './src/index';
+import { Rect, Circle } from './src/index';
 const container = document.getElementById('app') as HTMLDivElement;
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-container.appendChild(canvas);
-const canvasIns = new Canvas2DEngine({
-  el: canvas,
-});
+const canvasIns = Canvas2DEngine.init(container, {});
 const nodeRect = [
   {
     x: 25,
@@ -52,6 +48,27 @@ const linePoints = [
 //   type: 'stroke',
 //   close: true,
 // });
-canvasIns.drawCircle(75, 75, 50);
+// canvasIns.drawCircle(75, 75, 50);
 // canvasIns.clear();
 console.log(canvasIns);
+let circle = new Circle({
+  shape: {
+    cx: 300,
+    cy: 300,
+    r: 100,
+  },
+});
+circle.on('mousedown', () => {
+  console.log('mousedown');
+});
+canvasIns.add(circle);
+
+canvasIns.add(
+  new Circle({
+    shape: {
+      cx: 100,
+      cy: 100,
+      r: 100,
+    },
+  })
+);
