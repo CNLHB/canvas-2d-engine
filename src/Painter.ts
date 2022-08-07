@@ -1,6 +1,7 @@
 import Layer from './Layer';
 import * as util from './utils/util';
 import env from './core/env';
+import timsort from './core/timsort';
 
 var HOVER_LAYER_ZLEVEL = 1e5;
 var CANVAS_ZLEVEL = 314159;
@@ -233,7 +234,7 @@ export default class Painter {
    * @param {boolean} [paintAll=false] 强制绘制所有displayable
    */
   refresh(paintAll?) {
-    console.log('painter Refresh');
+    console.log('painter Refresh', paintAll);
     // console.log(this.storage);
 
     var list = this.storage.getDisplayList(true);
@@ -533,13 +534,13 @@ export default class Painter {
    * @return {Layer}
    */
   getLayer(zlevel, virtual?) {
-    console.log('getLayer');
+    // console.log('getLayer');
 
     if (this._singleCanvas && !this._needsManuallyCompositing) {
       zlevel = CANVAS_ZLEVEL;
     }
     var layer = this._layers[zlevel];
-    console.log(layer, 'layer');
+    // console.log(layer, 'layer');
     if (!layer) {
       // Create a new layer
       layer = new Layer('zr_' + zlevel, this, this.dpr);
@@ -621,10 +622,69 @@ export default class Painter {
       }
     }
   }
+  // Iterate each other layer except buildin layer
+  eachOtherLayer(cb, context) {
+    var zlevelList = this._zlevelList;
+    var layer;
+    var z;
+    var i;
+    for (i = 0; i < zlevelList.length; i++) {
+      z = zlevelList[i];
+      layer = this._layers[z];
+      if (!layer.__builtin__) {
+        cb.call(context, layer, z);
+      }
+    }
+  }
   addHover(el, style) {}
   removeHover(el) {}
   clearHover() {}
-  refreshHover() {}
+  refreshHover() {
+    var hoverElements = this._hoverElements;
+    var len = hoverElements.length;
+    var hoverLayer = this._hoverlayer;
+    hoverLayer && hoverLayer.clear();
+
+    if (!len) {
+      return;
+    }
+    timsort(hoverElements, this.storage.displayableSortFunc);
+
+    // Use a extream large zlevel
+    // FIXME?
+    console.log('this HOVER_LAYER_ZLEVEL');
+    if (!hoverLayer) {
+      hoverLayer = this._hoverlayer = this.getLayer(HOVER_LAYER_ZLEVEL);
+    }
+
+    var scope = {};
+    hoverLayer.ctx.save();
+    for (var i = 0; i < len; ) {
+      var el = hoverElements[i];
+      var originalEl = el.__from;
+      // Original el is removed
+      // PENDING
+      if (!(originalEl && originalEl.__zr)) {
+        hoverElements.splice(i, 1);
+        originalEl.__hoverMir = null;
+        len--;
+        continue;
+      }
+      i++;
+
+      // Use transform
+      // FIXME style and shape ?
+      if (!originalEl.invisible) {
+        el.transform = originalEl.transform;
+        el.invTransform = originalEl.invTransform;
+        el.__clipPaths = originalEl.__clipPaths;
+        // el.
+        this._doPaintEl(el, hoverLayer, true, scope);
+      }
+    }
+
+    hoverLayer.ctx.restore();
+  }
   resize(w, h) {}
   pathToImage(e, dpr) {}
   clear() {}

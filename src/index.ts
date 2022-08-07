@@ -60,7 +60,8 @@ export default class CanvasEngine {
     if (!rendererType || !painterCtors[rendererType]) {
       rendererType = 'canvas';
     }
-    this.storage = new Storage();
+    const storage = new Storage();
+    this.storage = storage;
     var painter = new painterCtors[rendererType](dom, this.storage, opts, id);
     // const s = new Painter()
     this.painter = painter;
@@ -84,20 +85,17 @@ export default class CanvasEngine {
     this.animation.start();
     // 修改 storage.delFromStorage, 每次删除元素之前删除动画
     // FIXME 有点ugly
-    // var oldDelFromStorage = storage.delFromStorage;
-    // var oldAddToStorage = storage.addToStorage;
-
-    // storage.delFromStorage = function (el) {
-    //     oldDelFromStorage.call(storage, el);
-
-    //     el && el.removeSelfFromZr(self);
-    // };
-
-    // storage.addToStorage = function (el) {
-    //     oldAddToStorage.call(storage, el);
-
-    //     el.addSelfToZr(self);
-    // };
+    var oldDelFromStorage = storage.delFromStorage;
+    var oldAddToStorage = storage.addToStorage;
+    const self = this;
+    storage.delFromStorage = function (el) {
+      oldDelFromStorage.call(storage, el);
+      el && el.removeSelfFromZr(self);
+    };
+    storage.addToStorage = function (el) {
+      oldAddToStorage.call(storage, el);
+      el.addSelfToZr(self);
+    };
   }
   /**
    * 获取实例唯一标识
@@ -172,6 +170,8 @@ export default class CanvasEngine {
    * Mark and repaint the canvas in the next frame of browser
    */
   refresh() {
+    console.log('refresh');
+
     this._needsRefresh = true;
   }
 

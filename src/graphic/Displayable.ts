@@ -5,14 +5,34 @@ export default class Displayable extends Element {
   private _dirty: boolean;
   draggable;
   transform;
-  style;
+  style: any;
   rectHover = false;
+  _rect;
+  __dirty;
+  __clipPaths;
+  __dirtyText;
   constructor(opts) {
     super(opts);
+    opts = opts || {};
+
+    for (var name in opts) {
+      if (opts.hasOwnProperty(name) && name !== 'style') {
+        this[name] = opts[name];
+      }
+    }
     this.style = new Style(opts.style, this);
+    this._rect = null;
+    // Shapes for cascade clipping.
+    // Can only be `null`/`undefined` or an non-empty array, MUST NOT be an empty array.
+    // because it is easy to only using null to check whether clipPaths changed.
+    this.__clipPaths = null;
   }
   dirty(dirty) {
-    this._dirty = dirty;
+    this.__dirty = this.__dirtyText = true;
+
+    this._rect = null;
+
+    this.__zr && this.__zr.refresh();
   }
   decomposeTransform() {}
   updateTransform() {}

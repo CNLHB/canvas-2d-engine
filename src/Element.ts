@@ -35,7 +35,7 @@ class Element extends Transformable {
   name = '';
   draggable;
   transform;
-
+  animators;
   /**
    * zRender 实例对象，会在 element 添加到 zRender 实例中后自动赋值
    * zRender instance will be assigned when element is associated with zRender
@@ -56,7 +56,7 @@ class Element extends Transformable {
    * @see http://www.w3.org/TR/2dcontext/#clipping-region
    * @readOnly
    */
-  clipPath: null;
+  clipPath;
   /**
    * 是否是 Group
    * @type {boolean}
@@ -82,6 +82,8 @@ class Element extends Transformable {
     }
 
     var m = this.transform;
+    console.log(m, 'm');
+
     if (!m) {
       m = this.transform = [1, 0, 0, 1, 0, 0];
     }
@@ -168,77 +170,77 @@ class Element extends Transformable {
   /**
    * @param {module:zRender/graphic/Path} clipPath
    */
-  //   setClipPath(clipPath) {
-  //     var zr = this.__zr;
-  //     if (zr) {
-  //       clipPath.addSelfToZr(zr);
-  //     }
+  setClipPath(clipPath) {
+    var zr = this.__zr;
+    if (zr) {
+      clipPath.addSelfToZr(zr);
+    }
 
-  //     // Remove previous clip path
-  //     if (this.clipPath && this.clipPath !== clipPath) {
-  //       this.removeClipPath();
-  //     }
+    // Remove previous clip path
+    if (this.clipPath && this.clipPath !== clipPath) {
+      this.removeClipPath();
+    }
 
-  //     this.clipPath = clipPath;
-  //     clipPath.__zr = zr;
-  //     clipPath.__clipTarget = this;
+    this.clipPath = clipPath;
+    clipPath.__zr = zr;
+    clipPath.__clipTarget = this;
 
-  //     this.dirty(false);
-  //   }
+    this.dirty(false);
+  }
   /**
    */
-  //   removeClipPath() {
-  //     var clipPath = this.clipPath;
-  //     if (clipPath) {
-  //       if (clipPath.__zr) {
-  //         clipPath.removeSelfFromZr(clipPath.__zr);
-  //       }
+  removeClipPath() {
+    var clipPath = this.clipPath;
+    if (clipPath) {
+      if (clipPath.__zr) {
+        clipPath.removeSelfFromZr(clipPath.__zr);
+      }
 
-  //       clipPath.__zr = null;
-  //       clipPath.__clipTarget = null;
-  //       this.clipPath = null;
+      clipPath.__zr = null;
+      clipPath.__clipTarget = null;
+      this.clipPath = null;
 
-  //       this.dirty(false);
-  //     }
-  //   }
+      this.dirty(false);
+    }
+  }
   /**
    * Add self from zRender instance.
    * Not recursively because it will be invoked when element added to storage.
    * @param {module:zRender/zRender} zr
    */
-  //   addSelfToZr(zr) {
-  //     this.__zr = zr;
-  //     // 添加动画
-  //     var animators = this.animators;
-  //     if (animators) {
-  //       for (var i = 0; i < animators.length; i++) {
-  //         zr.animation.addAnimator(animators[i]);
-  //       }
-  //     }
+  addSelfToZr(zr) {
+    this.__zr = zr;
+    // 添加动画
+    var animators = this.animators;
+    if (animators) {
+      for (var i = 0; i < animators.length; i++) {
+        zr.animation.addAnimator(animators[i]);
+      }
+    }
 
-  //     if (this.clipPath) {
-  //       this.clipPath.addSelfToZr(zr);
-  //     }
-  //   }
+    if (this.clipPath) {
+      this.clipPath.addSelfToZr(zr);
+    }
+  }
   /**
    * Remove self from zRender instance.
    * Not recursively because it will be invoked when element added to storage.
    * @param {module:zRender/zRender} zr
    */
-  //   removeSelfFromZr(zr) {
-  //     this.__zr = null;
-  //     // 移除动画
-  //     var animators = this.animators;
-  //     if (animators) {
-  //       for (var i = 0; i < animators.length; i++) {
-  //         zr.animation.removeAnimator(animators[i]);
-  //       }
-  //     }
+  removeSelfFromZr(zr) {
+    this.__zr = null;
+    // 移除动画
+    var animators = this.animators;
+    if (animators) {
+      for (var i = 0; i < animators.length; i++) {
+        zr.animation.removeAnimator(animators[i]);
+      }
+    }
 
-  //     if (this.clipPath) {
-  //       this.clipPath.removeSelfFromZr(zr);
-  //     }
-  //   }
+    if (this.clipPath) {
+      this.clipPath.removeSelfFromZr(zr);
+    }
+  }
 }
 // applyMixins(Element, [Transformable, Event]);
 

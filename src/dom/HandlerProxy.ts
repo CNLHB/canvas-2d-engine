@@ -84,8 +84,8 @@ function isPointerFromTouch(event) {
 const localDOMHandlers = {
   mousedown: function (event) {
     event = normalizeEvent(this.dom, event);
-    console.log('localDOMHandlers');
-    console.log(this, event);
+    // console.log('localDOMHandlers');
+    // console.log(this, event);
 
     this._mayPointerCapture = [event.zrX, event.zrY];
 

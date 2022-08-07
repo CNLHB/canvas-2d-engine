@@ -4,7 +4,6 @@ import Event from '../event/event';
 export default class  Draggable extends Event {
     constructor(){
         super()
-        console.log('Draggable');
         this.on('mousedown', this._dragStart, this);
         this.on('mousemove', this._drag, this);
         this.on('mouseup', this._dragEnd, this);
@@ -31,7 +30,6 @@ export default class  Draggable extends Event {
             draggingTarget.dragging = true;
             this._x = e.offsetX;
             this._y = e.offsetY;
-            console.log('daggger');
             this.dispatchToElement(param(draggingTarget, e), 'dragstart', e.event);
         }
     }
@@ -39,7 +37,7 @@ export default class  Draggable extends Event {
     _drag (e) {
         var draggingTarget = this._draggingTarget;
 
-
+        // console.log('draggingTarget',draggingTarget);
         if (draggingTarget) {
             console.log(draggingTarget);
             console.log(this._x, this._y);
@@ -50,7 +48,6 @@ export default class  Draggable extends Event {
             var dy = y - this._y;
             this._x = x;
             this._y = y;
-
             draggingTarget.drift(dx, dy, e);
             this.dispatchToElement(param(draggingTarget, e), 'drag', e.event);
 

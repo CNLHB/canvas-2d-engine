@@ -4,8 +4,6 @@
 
 import { isCanvasEl } from '../core/dom';
 import env from '../core/env';
-console.log('env', env);
-
 //  import {isCanvasEl, transformCoordWithViewport} from './dom';
 var arraySlice = Array.prototype.slice;
 
@@ -263,7 +261,8 @@ function on(eventful, event, query, handler, context, isOnce) {
   return eventful;
 }
 
-var isDomLevel2 = typeof window !== 'undefined' && !!window.addEventListener;
+export var isDomLevel2 =
+  typeof window !== 'undefined' && !!window.addEventListener;
 
 var MOUSE_EVENT_REG = /^(?:mouse|pointer|contextmenu|drag|drop)|click/;
 var _calcOut = [];

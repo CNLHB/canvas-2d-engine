@@ -14,9 +14,9 @@ export default class Path extends Displayable {
   segmentIgnoreThreshold: 0;
   _rectWithStroke;
   __dirty;
-
+  __clipTarget;
   /**
-   * See `module:zrender/src/graphic/helper/subPixelOptimize`.
+   * See `/src/graphic/helper/subPixelOptimize`.
    * @type {boolean}
    */
   subPixelOptimize: false;
@@ -25,10 +25,69 @@ export default class Path extends Displayable {
     this.createPathProxy();
   }
   brush(ctx, prevEl) {
+    var style = this.style;
     var path = this.path;
-    console.log('brush', this, ctx, path);
+    //  || pathProxyForDraw;
+    // console.log(path);
+    var hasStroke = style.hasStroke();
+    var hasFill = style.hasFill();
+    var fill = style.fill;
+    var stroke = style.stroke;
+    var hasFillGradient = hasFill && !!fill.colorStops;
+    var hasStrokeGradient = hasStroke && !!stroke.colorStops;
+    var hasFillPattern = hasFill && !!fill.image;
+    var hasStrokePattern = hasStroke && !!stroke.image;
+    style.bind(ctx, this, prevEl);
+    this.setTransform(ctx);
+    if (this.__dirty) {
+      var rect;
+      // Update gradient because bounding rect may changed
+      if (hasFillGradient) {
+        rect = rect || this.getBoundingRect();
+        // this._fillGradient = style.getGradient(ctx, fill, rect);
+      }
+      if (hasStrokeGradient) {
+        rect = rect || this.getBoundingRect();
+        // this._strokeGradient = style.getGradient(ctx, stroke, rect);
+      }
+    }
+    // Use the gradient or pattern
+    if (hasFillGradient) {
+      // PENDING If may have affect the state
+      // ctx.fillStyle = this._fillGradient;
+    } else if (hasFillPattern) {
+      // ctx.fillStyle = getCanvasPattern.call(fill, ctx);
+    }
+    if (hasStrokeGradient) {
+      // ctx.strokeStyle = this._strokeGradient;
+    } else if (hasStrokePattern) {
+      // ctx.strokeStyle = getCanvasPattern.call(stroke, ctx);
+    }
+
+    // console.log('brush', this, ctx, path);
     this.path.beginPath(ctx);
     this.buildPath(path, this.shape, false);
+
+    if (hasFill) {
+      if (style.fillOpacity != null) {
+        var originalGlobalAlpha = ctx.globalAlpha;
+        ctx.globalAlpha = style.fillOpacity * style.opacity;
+        path.fill(ctx);
+        ctx.globalAlpha = originalGlobalAlpha;
+      } else {
+        path.fill(ctx);
+      }
+    }
+    if (hasStroke) {
+      if (style.strokeOpacity != null) {
+        var originalGlobalAlpha = ctx.globalAlpha;
+        ctx.globalAlpha = style.strokeOpacity * style.opacity;
+        path.stroke(ctx);
+        ctx.globalAlpha = originalGlobalAlpha;
+      } else {
+        path.stroke(ctx);
+      }
+    }
   }
   getGlobalScale(out) {
     var m = this.transform;
@@ -70,10 +129,34 @@ export default class Path extends Displayable {
     }
     return this;
   }
+  /**
+   * @param  {boolean} dirtyPath
+   */
+  dirty(dirtyPath?) {
+    if (dirtyPath == null) {
+      dirtyPath = true;
+    }
+    // Only mark dirty, not mark clean
+    if (dirtyPath) {
+      this.__dirtyPath = dirtyPath;
+      this._rect = null;
+    }
+
+    this.__dirty = this.__dirtyText = true;
+    console.log('dirty', this.__zr);
+
+    this.__zr && this.__zr.refresh();
+
+    // Used as a clipping path
+    if (this.__clipTarget) {
+      this.__clipTarget.dirty();
+    }
+  }
   createPathProxy() {
     if (this.path) return;
     this.path = new PathProxy();
   }
+
   getBoundingRect() {
     var rect = this._rect;
     var style = this.style;
@@ -118,6 +201,7 @@ export default class Path extends Displayable {
           rectWithStroke.y -= w / lineScale / 2;
         }
       }
+      //   console.log('rectWithStroke', rectWithStroke);
 
       // Return rect with stroke
       return rectWithStroke;

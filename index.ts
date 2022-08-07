@@ -40,16 +40,6 @@ const linePoints = [
     y: 75,
   },
 ];
-// nodeRect.forEach((rect) => {
-//   canvasIns.drawRect(rect);
-// });
-// canvasIns.drawLine({
-//   points: linePoints,
-//   type: 'stroke',
-//   close: true,
-// });
-// canvasIns.drawCircle(75, 75, 50);
-// canvasIns.clear();
 console.log(canvasIns);
 let circle = new Circle({
   shape: {
@@ -57,9 +47,16 @@ let circle = new Circle({
     cy: 300,
     r: 100,
   },
+  style: {
+    fill: 'blue',
+  },
+  draggable: true,
 });
 circle.on('mousedown', () => {
   console.log('mousedown');
+});
+circle.on('mousemove', () => {
+  console.log('mousemove');
 });
 canvasIns.add(circle);
 
@@ -69,6 +66,29 @@ canvasIns.add(
       cx: 100,
       cy: 100,
       r: 100,
+    },
+  })
+);
+canvasIns.add(
+  new Circle({
+    shape: {
+      cx: 100,
+      cy: 100,
+      r: 100,
+    },
+  })
+);
+canvasIns.add(
+  new Rect({
+    shape: {
+      x: 20,
+      y: 100,
+      width: 100,
+      height: 100,
+    },
+    style: {
+      fill: 'none',
+      stroke: 'red',
     },
   })
 );

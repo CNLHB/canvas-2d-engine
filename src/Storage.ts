@@ -111,7 +111,7 @@ export default class Storage {
     }
     return this;
   }
-  delFromStorage(el) {
+  delFromStorage(el): any {
     if (el) {
       el.__storage = null;
     }

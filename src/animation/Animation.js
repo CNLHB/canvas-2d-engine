@@ -157,7 +157,6 @@ class Animation extends Event{
         // depends on the sequence (e.g., echarts-stream and finish
         // event judge)
         this.trigger('frame', delta);
-
         if (this.stage.update) {
             this.stage.update();
         }

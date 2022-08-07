@@ -1,8 +1,50 @@
 import Draggable from './core/Draggable';
 import * as vec2 from './core/vector';
+import { isDomLevel2 } from './event/event';
 
 import * as util from './utils/util';
 var SILENT = 'silent';
+/**
+ * preventDefault and stopPropagation.
+ * Notice: do not use this method in zrender. It can only be
+ * used by upper applications if necessary.
+ *
+ * @param {Event} e A mouse or touch event.
+ */
+export var stop = isDomLevel2
+  ? function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.cancelBubble = true;
+    }
+  : function (e) {
+      e.returnValue = false;
+      e.cancelBubble = true;
+    };
+function stopEvent() {
+  stop(this.event);
+}
+function makeEventPacket(eveType, targetInfo, event) {
+  return {
+    type: eveType,
+    event: event,
+    // target can only be an element that is not silent.
+    target: targetInfo.target,
+    // topTarget can be a silent element.
+    topTarget: targetInfo.topTarget,
+    cancelBubble: false,
+    offsetX: event.zrX,
+    offsetY: event.zrY,
+    gestureEvent: event.gestureEvent,
+    pinchX: event.pinchX,
+    pinchY: event.pinchY,
+    pinchScale: event.pinchScale,
+    wheelDelta: event.zrDelta,
+    zrByTouch: event.zrByTouch,
+    which: event.which,
+    stop: stopEvent,
+  };
+}
 
 var handlerNames = [
   'click',
@@ -78,8 +120,8 @@ export default class Handler extends Draggable {
    * @private
    * @param {number} x
    * @param {number} y
-   * @param {module:zrender/graphic/Displayable} exclude
-   * @return {model:zrender/Element}
+   * @param {module:/graphic/Displayable} exclude
+   * @return {model:/Element}
    * @method
    */
   findHover(x, y, exclude?) {
@@ -124,14 +166,59 @@ export default class Handler extends Draggable {
     }
     this.proxy = proxy;
   }
-  click() {}
-  dblclick() {}
+  click(event) {
+    this.handlerComm('click', event);
+  }
+  dblclick(event) {
+    this.handlerComm('dblclick', event);
+  }
   mousewheel() {}
   mouseout() {}
-  mouseup() {}
-  mousemove() {}
+  mouseup(event) {
+    this.handlerComm('mouseup', event);
+  }
+  mousemove(event) {
+    var x = event.zrX;
+    var y = event.zrY;
+    // console.log('event', event);
+    var isOutside = isOutsideBoundary(this, x, y);
+
+    var lastHovered = this._hovered;
+    var lastHoveredTarget = lastHovered.target;
+
+    // If lastHoveredTarget is removed from zr (detected by '__zr') by some API call
+    // (like 'setOption' or 'dispatchAction') in event handlers, we should find
+    // lastHovered again here. Otherwise 'mouseout' can not be triggered normally.
+    // See #6198.
+    if (lastHoveredTarget && !lastHoveredTarget.__zr) {
+      lastHovered = this.findHover(lastHovered.x, lastHovered.y);
+      lastHoveredTarget = lastHovered.target;
+    }
+
+    var hovered = (this._hovered = isOutside
+      ? { x: x, y: y }
+      : this.findHover(x, y));
+    // console.log(hovered);
+    var hoveredTarget = hovered.target;
+
+    var proxy = this.proxy;
+    proxy.setCursor &&
+      proxy.setCursor(hoveredTarget ? hoveredTarget.cursor : 'default');
+
+    // Mouse out on previous hovered element
+    if (lastHoveredTarget && hoveredTarget !== lastHoveredTarget) {
+      this.dispatchToElement(lastHovered, 'mouseout', event);
+    }
+
+    // Mouse moving on one element
+    this.dispatchToElement(hovered, 'mousemove', event);
+
+    // Mouse over on a new element
+    if (hoveredTarget && hoveredTarget !== lastHoveredTarget) {
+      this.dispatchToElement(hovered, 'mouseover', event);
+    }
+  }
   mousedown(event) {
-    console.log('handler', event);
     console.log('handler', { x: event.zrX, y: event.zrY });
     this.handlerComm('mousedown', event);
   }
@@ -139,9 +226,47 @@ export default class Handler extends Draggable {
    *targetInfo目标元素
    */
   dispatchToElement(targetInfo, eventName, event) {
-    this.trigger(eventName, event);
+    targetInfo = targetInfo || {};
+    var el = targetInfo.target;
+    if (el && el.silent) {
+      return;
+    }
+    var eventHandler = 'on' + eventName;
+    var eventPacket = makeEventPacket(eventName, targetInfo, event);
+    while (el) {
+      el[eventHandler] &&
+        (eventPacket.cancelBubble = el[eventHandler].call(el, eventPacket));
+
+      el.trigger(eventName, eventPacket);
+
+      el = el.parent;
+
+      if (eventPacket.cancelBubble) {
+        break;
+      }
+    }
+
+    if (!eventPacket.cancelBubble) {
+      // 冒泡到顶级 zrender 对象
+      this.trigger(eventName, eventPacket);
+      // 分发事件到用户自定义层
+      // 用户有可能在全局 click 事件中 dispose，所以需要判断下 painter 是否存在
+      this.painter &&
+        this.painter.eachOtherLayer(function (layer) {
+          if (typeof layer[eventHandler] === 'function') {
+            layer[eventHandler].call(layer, eventPacket);
+          }
+          if (layer.trigger) {
+            layer.trigger(eventName, eventPacket);
+          }
+        });
+    }
+    // this.trigger(eventName, event);
   }
-  contextmenu() {}
+  contextmenu(event) {
+    this.handlerComm('contextmenu', event);
+  }
+  //'click', 'mousedown', 'mouseup', 'mousewheel', 'dblclick', 'contextmenu'
   handlerComm(name, event) {
     var x = event.zrX;
     var y = event.zrY;
@@ -178,7 +303,7 @@ export default class Handler extends Draggable {
       }
       this._downPoint = null;
     }
-    console.log(hovered);
+    // console.log(hovered);
 
     this.dispatchToElement(hovered, name, event);
   }
