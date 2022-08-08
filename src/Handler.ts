@@ -1,9 +1,10 @@
 import Draggable from './core/Draggable';
 import * as vec2 from './core/vector';
 import { isDomLevel2 } from './event/event';
-
+import keyboard from './KeyboardJS/index';
 import * as util from './utils/util';
 var SILENT = 'silent';
+
 /**
  * preventDefault and stopPropagation.
  * Notice: do not use this method in zrender. It can only be
@@ -69,6 +70,7 @@ export default class Handler extends Draggable {
   _downEl;
   _downPoint;
   _upEl;
+  keyboard;
   constructor(storage, painter, proxy, painterRoot) {
     super();
     this.storage = storage;
@@ -108,13 +110,23 @@ export default class Handler extends Draggable {
 
     /**
      * @private
-     * @type {module:zrender/core/GestureMgr}
+     * @type {module:/core/GestureMgr}
      */
     this._gestureMgr;
 
     // Draggable.call(this);
 
     this.setHandlerProxy(proxy);
+    console.log(keyboard);
+    this.keyboard = keyboard;
+    keyboard.bind('ctrl > c', () => {
+      console.log('c is pressed');
+    });
+    keyboard.bind('ctrl > s', (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      console.log('s is pressed');
+    });
   }
   /**
    * @private

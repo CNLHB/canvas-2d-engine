@@ -38,7 +38,7 @@ export default class Path extends Displayable {
     var hasFillPattern = hasFill && !!fill.image;
     var hasStrokePattern = hasStroke && !!stroke.image;
     style.bind(ctx, this, prevEl);
-    console.log(this);
+    // console.log(this);
 
     this.setTransform(ctx);
     if (this.__dirty) {

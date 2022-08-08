@@ -398,7 +398,6 @@ export default class HandlerProxy extends Event {
      * @type {Array.<number>} [x, y] or null.
      */
     this._mayPointerCapture = null;
-
     mountLocalDOMEventListeners(this, this._localHandlerScope);
   }
 }
