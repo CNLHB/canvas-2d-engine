@@ -127,6 +127,15 @@ export default class Handler extends Draggable {
       event.preventDefault();
       console.log('s is pressed');
     });
+    keyboard.bind(
+      'ctrl',
+      (event) => {
+        console.log('ctrl is pressed');
+      },
+      (event) => {
+        console.log('ctrl is up');
+      }
+    );
   }
   /**
    * @private
