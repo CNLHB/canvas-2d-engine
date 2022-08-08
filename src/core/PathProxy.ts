@@ -402,7 +402,7 @@ export default class PathProxy {
   }
   /**
    * 添加子路径
-   * @param {module:zrender/core/PathProxy|Array.<module:zrender/core/PathProxy>} path
+   * @param {module:/core/PathProxy|Array.<module:/core/PathProxy>} path
    */
   appendPath(path) {
     if (!(path instanceof Array)) {

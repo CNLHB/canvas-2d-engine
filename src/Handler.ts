@@ -219,7 +219,6 @@ export default class Handler extends Draggable {
     }
   }
   mousedown(event) {
-    console.log('handler', { x: event.zrX, y: event.zrY });
     this.handlerComm('mousedown', event);
   }
   /**处理后派发给实例和元素
@@ -228,15 +227,18 @@ export default class Handler extends Draggable {
   dispatchToElement(targetInfo, eventName, event) {
     targetInfo = targetInfo || {};
     var el = targetInfo.target;
+
     if (el && el.silent) {
       return;
     }
     var eventHandler = 'on' + eventName;
+
+    // 重新组装Event对象，派发给画布元素
     var eventPacket = makeEventPacket(eventName, targetInfo, event);
+
     while (el) {
       el[eventHandler] &&
         (eventPacket.cancelBubble = el[eventHandler].call(el, eventPacket));
-
       el.trigger(eventName, eventPacket);
 
       el = el.parent;
@@ -257,11 +259,11 @@ export default class Handler extends Draggable {
             layer[eventHandler].call(layer, eventPacket);
           }
           if (layer.trigger) {
+            console.log('xxx');
             layer.trigger(eventName, eventPacket);
           }
         });
     }
-    // this.trigger(eventName, event);
   }
   contextmenu(event) {
     this.handlerComm('contextmenu', event);
@@ -304,11 +306,13 @@ export default class Handler extends Draggable {
       this._downPoint = null;
     }
     // console.log(hovered);
+    console.log(`handler : ${name}`, { x, y });
+    console.log('hovered', hovered);
 
     this.dispatchToElement(hovered, name, event);
   }
 }
-/**
+/**是否为外边界
  * See [Drag outside].
  */
 function isOutsideBoundary(handlerInstance, x, y) {

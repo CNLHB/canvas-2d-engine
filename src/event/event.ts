@@ -220,6 +220,7 @@ function normalizeQuery(host, query) {
 function on(eventful, event, query, handler, context, isOnce) {
   var _h = eventful._$handlers;
   // console.log('_h', _h);
+
   if (typeof query === 'function') {
     context = handler;
     handler = query;
@@ -257,7 +258,9 @@ function on(eventful, event, query, handler, context, isOnce) {
   lastWrap && lastWrap.callAtLast
     ? _h[event].splice(lastIndex, 0, wrap)
     : _h[event].push(wrap);
-
+  if ('dragenter' == event) {
+    console.log(event, query, _h);
+  }
   return eventful;
 }
 

@@ -38,6 +38,8 @@ export default class Path extends Displayable {
     var hasFillPattern = hasFill && !!fill.image;
     var hasStrokePattern = hasStroke && !!stroke.image;
     style.bind(ctx, this, prevEl);
+    console.log(this);
+
     this.setTransform(ctx);
     if (this.__dirty) {
       var rect;
@@ -143,7 +145,7 @@ export default class Path extends Displayable {
     }
 
     this.__dirty = this.__dirtyText = true;
-    console.log('dirty', this.__zr);
+    // console.log('dirty', this.__zr);
 
     this.__zr && this.__zr.refresh();
 

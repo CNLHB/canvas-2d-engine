@@ -34,8 +34,24 @@ export default class Displayable extends Element {
 
     this.__zr && this.__zr.refresh();
   }
-  decomposeTransform() {}
-  updateTransform() {}
+  /**
+   * @param {Object|string} key
+   * @param {*} value
+   */
+  setStyle(key, value) {
+    this.style.set(key, value);
+    this.dirty(false);
+    return this;
+  }
+  /**
+   * Use given style object
+   * @param  {Object} obj
+   */
+  useStyle(obj) {
+    this.style = new Style(obj, this);
+    this.dirty(false);
+    return this;
+  }
   /**
    * If displayable element contain coord x, y
    * @param  {number} x

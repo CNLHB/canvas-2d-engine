@@ -33,8 +33,17 @@ class Element extends Transformable {
    * @type {string}
    */
   name = '';
+  /**
+   * 是否可拖动
+   */
   draggable;
+  /**
+   * 矩阵变换
+   */
   transform;
+  /**
+   * 动画
+   */
   animators;
   /**
    * zRender 实例对象，会在 element 添加到 zRender 实例中后自动赋值
@@ -52,7 +61,7 @@ class Element extends Transformable {
   /**
    * 用于裁剪的路径(shape)，所有 Group 内的路径在绘制时都会被这个路径裁剪
    * 该路径会继承被裁减对象的变换
-   * @type {module:zRender/graphic/Path}
+   * @type {module:/graphic/Path}
    * @see http://www.w3.org/TR/2dcontext/#clipping-region
    * @readOnly
    */
@@ -72,6 +81,7 @@ class Element extends Transformable {
    * @param  {number} dy dy on the global space
    */
   drift(dx, dy) {
+    // 横向拖，纵向拖
     switch (this.draggable) {
       case 'horizontal':
         dy = 0;
@@ -80,22 +90,18 @@ class Element extends Transformable {
         dx = 0;
         break;
     }
-
     var m = this.transform;
-    console.log(m, 'm');
-
     if (!m) {
       m = this.transform = [1, 0, 0, 1, 0, 0];
     }
     m[4] += dx;
     m[5] += dy;
-
+    //将变换应用到元素，重新刷新时自动获取修改值
     this.decomposeTransform();
     this.dirty(false);
   }
   dirty(dirty) {}
-  updateTransform() {}
-  decomposeTransform() {}
+
   /**
    * Hook before update
    */
@@ -108,9 +114,12 @@ class Element extends Transformable {
    * Update each frame
    */
   update() {
-    this.updateTransform();
+    try {
+      this.updateTransform();
+    } catch (error) {}
   }
   /**
+   * @override
    * @param  {Function} cb
    * @param  {}   context
    */
@@ -151,7 +160,7 @@ class Element extends Transformable {
    * @param {string|Object} key
    * @param {*} value
    */
-  attr(key, value) {
+  attr(key, value?) {
     if (typeof key === 'string') {
       this.attrKV(key, value);
     } else if (zrUtil.isObject(key)) {
@@ -168,7 +177,7 @@ class Element extends Transformable {
   }
 
   /**
-   * @param {module:zRender/graphic/Path} clipPath
+   * @param {module:/graphic/Path} clipPath
    */
   setClipPath(clipPath) {
     var zr = this.__zr;
@@ -225,7 +234,7 @@ class Element extends Transformable {
   /**
    * Remove self from zRender instance.
    * Not recursively because it will be invoked when element added to storage.
-   * @param {module:zRender/zRender} zr
+   * @param {module:/zRender} zr
    */
   removeSelfFromZr(zr) {
     this.__zr = null;

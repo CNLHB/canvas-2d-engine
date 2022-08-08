@@ -1,6 +1,6 @@
 /**
  * 3x2矩阵操作类
- * @exports zrender/tool/matrix
+ * @exports /tool/matrix
  */
 
 /* global Float32Array */
@@ -8,7 +8,11 @@
 var ArrayCtor = typeof Float32Array === 'undefined'
     ? Array
     : Float32Array;
-
+/**
+* matrix方法有六个参数matrix(a, b, c, d, x, y)，六个参数默认值是matrix(1, 0, 0, 1, 0, 0)，这六个参数分别控制不同的变换
+* a 水平缩放、b 水平拉伸、c 垂直拉伸、d 垂直缩放、x 水平位移、y 垂直位移
+ * 
+ */
 /**
  * Create a identity matrix.
  * @return {Float32Array|Array.<number>}

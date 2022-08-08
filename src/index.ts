@@ -170,7 +170,7 @@ export default class CanvasEngine {
    * Mark and repaint the canvas in the next frame of browser
    */
   refresh() {
-    console.log('refresh');
+    // console.log('refresh');
 
     this._needsRefresh = true;
   }

@@ -19,12 +19,12 @@ export default class  Draggable extends Event {
         // this._y = 0;
     }
     _dragStart (e) {
-        console.log('_dragStart');
         var draggingTarget = e.target;
         // Find if there is draggable in the ancestor
         while (draggingTarget && !draggingTarget.draggable) {
             draggingTarget = draggingTarget.parent;
         }
+        console.log('_dragStart',draggingTarget);
         if (draggingTarget) {
             this._draggingTarget = draggingTarget;
             draggingTarget.dragging = true;
@@ -39,11 +39,8 @@ export default class  Draggable extends Event {
 
         // console.log('draggingTarget',draggingTarget);
         if (draggingTarget) {
-            console.log(draggingTarget);
-            console.log(this._x, this._y);
             var x = e.offsetX;
             var y = e.offsetY;
-
             var dx = x - this._x;
             var dy = y - this._y;
             this._x = x;

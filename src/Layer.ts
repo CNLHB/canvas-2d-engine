@@ -63,17 +63,23 @@ interface ILayer {
 class Layer {
   __dirty = true;
   __used = false;
+  dpr;
   ctx;
   id;
   dom;
+  /**
+   * 运动模式变量
+   */
   domBack;
   ctxBack;
   painter;
   config;
   clearColor;
+  /**
+   * 运动模糊
+   */
   motionBlur;
   lastFrameAlpha;
-  dpr;
   __builtin__;
   zlevel;
   constructor(id, painter, dpr) {

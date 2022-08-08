@@ -227,14 +227,45 @@ export default class Painter {
       0
     );
   }
-  configLayer(zLevel, config) {}
+  /**
+   * 修改指定zlevel的绘制参数
+   *
+   * @param {string} zlevel
+   * @param {Object} config 配置对象
+   * @param {string} [config.clearColor=0] 每次清空画布的颜色
+   * @param {string} [config.motionBlur=false] 是否开启动态模糊
+   * @param {number} [config.lastFrameAlpha=0.7]
+   * 在开启动态模糊的时候使用，与上一帧混合的alpha值，值越大尾迹越明显
+   */
+  configLayer(zlevel, config) {
+    if (config) {
+      var layerConfig = this._layerConfig;
+      if (!layerConfig[zlevel]) {
+        layerConfig[zlevel] = config;
+      } else {
+        util.merge(layerConfig[zlevel], config, true);
+      }
+
+      for (var i = 0; i < this._zlevelList.length; i++) {
+        var _zlevel = this._zlevelList[i];
+        // TODO Remove EL_AFTER_INCREMENTAL_INC magic number
+        if (
+          _zlevel === zlevel ||
+          _zlevel === zlevel + EL_AFTER_INCREMENTAL_INC
+        ) {
+          var layer = this._layers[_zlevel];
+          util.merge(layer, layerConfig[zlevel], true);
+        }
+      }
+    }
+  }
   setBackgroundColor(backgroundColor) {}
   /**
    * 刷新
    * @param {boolean} [paintAll=false] 强制绘制所有displayable
    */
   refresh(paintAll?) {
-    console.log('painter Refresh', paintAll);
+    // console.log('painter Refresh', paintAll);
     // console.log(this.storage);
 
     var list = this.storage.getDisplayList(true);

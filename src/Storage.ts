@@ -75,7 +75,7 @@ export default class Storage {
     }
 
     el.beforeUpdate();
-
+    
     if (el.__dirty) {
       el.update();
     }
@@ -128,7 +128,7 @@ export default class Storage {
   getDisplayList(update, includeIgnore) {
     includeIgnore = includeIgnore || false;
     if (update) {
-      console.log('getDisplayList');
+      // console.log('getDisplayList');
 
       this.updateDisplayList(includeIgnore);
     }

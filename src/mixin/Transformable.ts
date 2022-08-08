@@ -17,7 +17,7 @@ function isNotAroundZero(val) {
 }
 
 /**
- * @alias module:zrender/mixin/Transformable
+ * @alias module:/mixin/Transformable
  * @constructor
  */
 
@@ -72,7 +72,6 @@ class Transformable extends Event {
    * 判断是否需要有坐标变换
    * 如果有坐标变换, 则从position, rotation, scale以及父节点的transform计算出自身的transform矩阵
    */
-
   needLocalTransform() {
     return (
       isNotAroundZero(this.rotation) ||
@@ -86,7 +85,6 @@ class Transformable extends Event {
     var parent = this.parent;
     var parentHasTransform = parent && parent.transform;
     var needLocalTransform = this.needLocalTransform();
-
     var m = this.transform;
     if (!(needLocalTransform || parentHasTransform)) {
       m && mIdentity(m);
@@ -127,7 +125,6 @@ class Transformable extends Event {
       m[2] *= sy;
       m[3] *= sy;
     }
-
     this.invTransform = this.invTransform || matrix.create();
     matrix.invert(this.invTransform, m);
   }
@@ -173,6 +170,7 @@ class Transformable extends Event {
   }
   /**
    * 将自己的transform应用到context上
+   * 元素变换，不实际修改坐标，而是将元素的矩阵应用到画布上下文
    * @param {CanvasRenderingContext2D} ctx
    */
   setTransform(ctx) {
@@ -195,6 +193,7 @@ class Transformable extends Event {
     var dpr = ctx.dpr || 1;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
+  // 设置元素变换
   setLocalTransform(m) {
     if (!m) {
       // TODO return or set identity?
